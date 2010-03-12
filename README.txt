@@ -1,7 +1,7 @@
 iPhone Context Views:
 
 This is a mirror of the main project at: 
-	http://codaset.com/coreyfloyd/iphone-context-view
+	http://codaset.com/coreyfloyd/iphone-context-views
 
 	To use context views in your app, import the following 5 files from the sample project:
 
