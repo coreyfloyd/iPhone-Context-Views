@@ -30,6 +30,7 @@
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event{
 	
+	//lets check if a context view is already on screen…
 	for(UIView* eachSubView in self.view.subviews){
 		
 		if([eachSubView conformsToProtocol:@protocol(ContextViewActions)]){
@@ -38,10 +39,10 @@
 		}
 	}
 	
-	
+	//Ok, lets check to see if someone tapped…
 	if([[touches anyObject] tapCount] == 1){
 		
-		if([[touches anyObject] locationInView:self.view].y < 230){
+		if([[touches anyObject] locationInView:self.view].y < 200){
 			
 			[self displayContextViewAtPoint:[[touches anyObject] locationInView:self.view]];
 			
@@ -59,6 +60,8 @@
 	[menu show];
 	[menu release];
 	
+	//Since showing the menu/view adds it to the super view, we can safely release it.
+	
 }
 
 
@@ -74,13 +77,15 @@
 
 - (void)contextViewWasTapped:(id<ContextViewActions>)aContextView{
 	
-	[aContextView dismiss];
-	[self setRandomBackgroundColor];
+	//since both menus and views call this delegate method, lets make sure we only dismiss the context views.
 	
+	if([aContextView isKindOfClass:[ContextView class]])
+		[aContextView dismiss];	
 }
 
 - (void)contextMenu:(ContextMenuView*)menu didSelectItemAtIndex:(NSInteger)index{
-	
+
+	//Since the menu has only been retained by the superview, dismissing it will deallocate the menu
 	
 	[menu dismiss];
 	[self setRandomBackgroundColor];

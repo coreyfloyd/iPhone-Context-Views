@@ -10,6 +10,17 @@
 #import "UIView-Extensions.h"
 
 
+@interface ContextView()
+
+@property(nonatomic,assign)UIView *mySuperView;
+@property(nonatomic,assign)CGPoint contextViewOrigin;
+@property(nonatomic,assign)CGFloat contextViewWidth;
+@property(nonatomic,retain)UILabel *title;
+@property(nonatomic,retain)UILabel *body;
+@property(nonatomic,retain)id<ContextViewDataSource> datasource;
+
+@end
+
 @implementation ContextView
 
 static float kOutlineInset = 2.0;
@@ -26,10 +37,10 @@ static float kTextSeperation = 5.0;
 
 - (void) dealloc
 {
-	[mySuperView release], mySuperView = nil;
 	[title release], title = nil;
 	[body release], body = nil;
 	[datasource release], datasource = nil;
+	mySuperView = nil;
 	delegate = nil;
 		
 	[super dealloc];
@@ -38,24 +49,44 @@ static float kTextSeperation = 5.0;
 
 - (id)initInView:(UIView *)aView dataSource:(id<ContextViewDataSource>)dataSource origin:(CGPoint)point width:(CGFloat)width{
 	
+	if(![dataSource conformsToProtocol:@protocol(ContextViewDataSource)]){
+		[self release];
+		return nil;
+	}
+	if(([dataSource contextViewBody] == nil) && ([dataSource contextViewTitle]==nil)){
+		[self release];
+		return nil;
+	}
+	
+	
 	CGRect titleFrame;
-	titleFrame.origin = CGPointMake(kOutlineInset, kOutlineInset);
-	titleFrame.size = [[dataSource contextViewTitle] sizeWithFont:[UIFont boldSystemFontOfSize:17] 
-											   constrainedToSize:CGSizeMake((width - 2*kOutlineInset) , 480)
-												   lineBreakMode:UILineBreakModeWordWrap];
+	
+	if([dataSource contextViewTitle] != nil){
+	
+		titleFrame.origin = CGPointMake(kOutlineInset, kOutlineInset);
+		titleFrame.size = [[dataSource contextViewTitle] sizeWithFont:[UIFont boldSystemFontOfSize:17] 
+													constrainedToSize:CGSizeMake((width - 2*kOutlineInset) , 480)
+														lineBreakMode:UILineBreakModeWordWrap];
+	}
+
 		
 	
 	CGRect bodyFrame;
+		
+	if([dataSource contextViewBody] != nil){
+
 	bodyFrame.origin = CGPointMake(kOutlineInset, (titleFrame.size.height+kTextSeperation+kOutlineInset));
 	bodyFrame.size = [[dataSource contextViewBody] sizeWithFont:[UIFont systemFontOfSize:16]
 											  constrainedToSize:CGSizeMake((width - 2*kOutlineInset), 480-titleFrame.size.height-kTextSeperation-point.y)
 												  lineBreakMode:UILineBreakModeWordWrap];
+	}
 	
 	CGRect myFrame;
 	myFrame.origin = point;
 	myFrame.size.width = width;
-	myFrame.size.height = titleFrame.size.height+bodyFrame.size.height+(2*kOutlineInset)+kTextSeperation; 
 	
+	myFrame.size.height = titleFrame.size.height+bodyFrame.size.height+(2*kOutlineInset) + kTextSeperation;  
+
 	
 	self = [super initWithFrame:myFrame];
 	if (self != nil) {
@@ -100,7 +131,8 @@ static float kTextSeperation = 5.0;
 	 
 - (void)drawRect:(CGRect)rect{
 	
-	[self strokeRect:rect color:[UIColor blackColor]];
+	if([self respondsToSelector:@selector(strokeRect:color:)])
+		[self strokeRect:rect color:[UIColor blackColor]];
 	
 }
 

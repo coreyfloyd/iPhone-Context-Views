@@ -21,19 +21,12 @@
 	UIView* mySuperView;
 	CGPoint contextViewOrigin;
 	CGFloat contextViewWidth;
-	
-	NSArray* optionNames;
-	
+		
 	id<ContextMenuViewDataSource> datasource;
 	id<ContextMenuViewDelegate, ContextViewDelegate> delegate;
 	
 }
-@property(nonatomic,retain)IBOutlet UIView *mySuperView;
-@property(nonatomic,assign)CGPoint contextViewOrigin;
-@property(nonatomic,assign)CGFloat contextViewWidth;
-@property(nonatomic,retain)NSArray *optionNames;
 @property(nonatomic,assign)id<ContextMenuViewDelegate, ContextViewDelegate> delegate;
-@property(nonatomic,retain)id<ContextMenuViewDataSource> datasource;
 
 
 - (id)initInView:(UIView *)aView dataSource:(id<ContextMenuViewDataSource>)dataSource origin:(CGPoint)point maxWidth:(CGFloat)maxWidth;

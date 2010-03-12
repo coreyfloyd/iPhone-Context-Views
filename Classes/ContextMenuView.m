@@ -36,6 +36,12 @@ float maxWidthOfStrings(NSArray* strings){
 
 @interface ContextMenuView()
 
+@property(nonatomic,assign)UIView *mySuperView;
+@property(nonatomic,assign)CGPoint contextViewOrigin;
+@property(nonatomic,assign)CGFloat contextViewWidth;
+@property(nonatomic,retain)id<ContextMenuViewDataSource> datasource;
+
+
 - (void)createOptionsWithNames:(NSArray*)options;
 - (UIButton*)buttonWithName:(NSString*)name;
 
@@ -48,7 +54,6 @@ float maxWidthOfStrings(NSArray* strings){
 @synthesize mySuperView;
 @synthesize contextViewOrigin;
 @synthesize contextViewWidth;
-@synthesize optionNames;
 @synthesize delegate;
 @synthesize datasource;
 
@@ -57,10 +62,8 @@ float maxWidthOfStrings(NSArray* strings){
 
 - (void) dealloc
 {
-	self.mySuperView = nil;
 	[datasource release], datasource = nil;
-	[mySuperView release], mySuperView = nil;
-	[optionNames release], optionNames = nil;
+	mySuperView = nil;
 	delegate = nil;
 	
 	[super dealloc];
@@ -68,10 +71,13 @@ float maxWidthOfStrings(NSArray* strings){
 
 - (id)initInView:(UIView *)aView dataSource:(id<ContextMenuViewDataSource>)dataSource origin:(CGPoint)point maxWidth:(CGFloat)maxWidth{
 	
-	
+	if(![dataSource conformsToProtocol:@protocol(ContextMenuViewDataSource)]){
+		[self release];
+		return nil;
+	}
 	NSArray* opts = [dataSource contextViewOptions];
 	
-	if(opts == 0){
+	if(opts == nil){
 		[self release];
 		return nil;
 	}
@@ -86,12 +92,11 @@ float maxWidthOfStrings(NSArray* strings){
 	if (self != nil) {
 		
 		self.mySuperView = aView;
-		self.optionNames = opts;
 		self.datasource = dataSource;
 		
 		self.backgroundColor = [UIColor whiteColor];
 		
-		[self createOptionsWithNames:self.optionNames];
+		[self createOptionsWithNames:opts];
 		
 	}
 	
@@ -101,7 +106,8 @@ float maxWidthOfStrings(NSArray* strings){
 
 - (void)drawRect:(CGRect)rect{
 	
-	[self strokeRect:rect color:[UIColor blackColor]];
+	if([self respondsToSelector:@selector(strokeRect:color:)])
+		[self strokeRect:rect color:[UIColor blackColor]];
 
 }
 

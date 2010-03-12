@@ -13,7 +13,6 @@
 
 @interface ContextViewViewController : UIViewController <ContextMenuViewDelegate, ContextViewDelegate> {
 
-	
 	MyDummyClass* myDummyObject;
 }
 @property(nonatomic,retain)MyDummyClass *myDummyObject;
